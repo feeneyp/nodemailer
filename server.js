@@ -1,8 +1,96 @@
+const express = require('express');
+const app = express();
+
+var nodemailer = require('nodemailer');
+var fs = require("fs");
+
+var txt = ""
+
+app.get('/email', function(req, res) {
+  res.sendFile(path.join(__dirname, '../rolodex_node/public/email.html'));
+})
+
+
+app.get('/send',function(req,res){
+
+  console.log('req.query is: '+ JSON.stringify(req.query));
+  function readFile(callback) {
+      fs.readFile('package.json', function read(err, data) {
+      if (err) {
+        throw err;
+      }
+      else {
+        txt = data;
+        //callback(txt);
+      }
+    });
+  }
+
+
+  function send(text) {
+    var transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: 'patrick@elium.academy', // Your email id
+                pass: '@vlir@123456' // Your password
+            }
+        });
+
+    var mailOptions = {
+        //below is for using the send.html form to send the email
+        from: 'patrick@elium.academy', // sender address
+        to: req.query.to, // list of receivers
+        subject: req.query.subject, // Subject line
+        text: req.query.text
+
+        //this is for sending email with hardcoded parameters
+        // from: 'patrick@elium.academy', // sender address
+        // to: 'patrick@r3dpixel.com', // list of receivers
+        // subject: 'Email with package.json', // Subject line
+        // text: text
+    };
+
+   
+
+    transporter.sendMail(mailOptions, function(error, info){
+        if(error){
+            console.log(error);
+            res.send({message: 'error'});
+        }else{
+            console.log('Message sent: ' + info.response);
+            res.send({message: info.response});
+        };
+    });
+  }
+
+  readFile(send)
+  //by using send() I will get async issues and txt will be empty
+  //to solve this I placed the call to send within the fs.readFile callback
+  //function. The thing to do is get rid of the line below, get rid of global
+  //var txt and uncomment the line callback(txt) in the readfile method
+  send();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-const express = require('express');
+//const express = require('express');
 const bodyParser= require('body-parser');
-const app = express();
+//const app = express();
 const path = require('path');
 const MongoClient = require('mongodb').MongoClient;
 var db;
@@ -46,7 +134,6 @@ function isLoggedIn(req, res, next) {
 app.get('/', (req, res) => {
   personSelected = 0;
   db.collection('persons').aggregate({ $sort: {name: 1}}, (err,results) => {
-  console.log('app.get results is: '+results)
   res.render('index.ejs', {results: results, personSelected:personSelected});
   });
 });
@@ -157,6 +244,8 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(user, done) {
   done(null, user);
 });
+
+
 
 
 

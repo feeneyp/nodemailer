@@ -1,0 +1,24 @@
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+		    var to,subject,text;
+		    $("#send_email").click(function(){      
+		        to=$("#to").val();
+		        subject=$("#subject").val();
+		        text=$("#content").val();
+		        $("#message").text("Sending E-mail...Please wait");
+		        $.get("http://localhost:3000/send",{to:to,subject:subject,text:text})
+		    });
+		});
+	</script>
+</head>
+
+
+<h1>Send Email</h1>
+	<input id="to" type="text" placeholder="Enter recipient email" />
+	<input id="subject" type="text" placeholder="Write your Subject" />
+	<textarea id="content" placeholder="Write text of your email"></textarea>
+	<button id="send_email">Send Email</button>
+<span id="message"></span>

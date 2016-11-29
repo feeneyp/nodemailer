@@ -31,8 +31,8 @@ app.get('/send',function(req,res){
     var transporter = nodemailer.createTransport({
             service: 'Gmail',
             auth: {
-                user: 'patrick@elium.academy', // Your email id
-                pass: '@vlir@123456' // Your password
+                user: 'patrick@elium.academy', // developer email
+                pass: '' // Your password
             }
         });
 
